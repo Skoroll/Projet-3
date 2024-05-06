@@ -1,4 +1,5 @@
 
+//Création des galleries photos
 function createGallery(){
     const requestOptions = {
         method: "GET",
@@ -9,11 +10,15 @@ function createGallery(){
         .then((response) => response.text())
         .then((works) => {
 
-            //Transforme les données de l'API en JSON
-            works = JSON.parse(works)
-            //Récupération de l'élément gallery
-            gallery = document.querySelector(".gallery")
 
+
+          //Transforme les données de l'API en JSON
+          works = JSON.parse(works)
+          //Récupération de l'élément gallery
+          gallery = document.querySelector(".gallery")
+          //Condition vérifiant l'existant de la zone .gallery
+          //Si elle existe alors la fonction se joue
+          if(gallery){
 
             //Création de l'élément
             for(let i = 0; i < works.length; i++){
@@ -38,28 +43,28 @@ function createGallery(){
             }
     
 
-//Création des sets pour les filtres
-//Objets
-let setObjets = new Set();
-setObjets.add(works[0]);
-setObjets.add(works[5]);        
+    //Création des sets pour les filtres
+    //Objets
+    let setObjets = new Set();
+    setObjets.add(works[0]);
+    setObjets.add(works[5]);        
 
 
-let setAppartements = new Set();
-setAppartements.add(works[1]);
-setAppartements.add(works[3]);
-setAppartements.add(works[5]);
-setAppartements.add(works[6]);
-setAppartements.add(works[7]);
-setAppartements.add(works[8]);
+    let setAppartements = new Set();
+    setAppartements.add(works[1]);
+    setAppartements.add(works[3]);
+    setAppartements.add(works[5]);
+    setAppartements.add(works[6]);
+    setAppartements.add(works[7]);
+    setAppartements.add(works[8]);
 
-let setHotelRestau = new Set();
-setHotelRestau.add(works[2]);
-setHotelRestau.add(works[9]);
-setHotelRestau.add(works[10]);
+    let setHotelRestau = new Set();
+    setHotelRestau.add(works[2]);
+    setHotelRestau.add(works[9]);
+    setHotelRestau.add(works[10]);
 
-let setTous = new Set()
-setTous.add = works
+    let setTous = new Set()
+    setTous.add = works
 
 
       //Fonctions de filtrages des travaux
@@ -172,7 +177,9 @@ setTous.add = works
                   })
                   
 
-
+      }else{
+        console.log("non")
+      }
 
         })
         .catch((error) => console.error(error));
@@ -182,29 +189,99 @@ setTous.add = works
 
 
 
+
+
+/*
+//Fonction login
 function apiLogin(){
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
 
-    const raw = JSON.stringify({
-    "email": "sophie.bluel@test.tld",
-    "password": "S0phie"
-    });
+  const raw = JSON.stringify({
+  "email": "sophie.bluel@test.tld",
+  "password": "S0phie"
+  });
 
-    const requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow"
-    };
+  const requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  body: raw,
+  redirect: "follow"
+  };
 
-    fetch("http://localhost:5678/api/users/login", requestOptions)
-    .then((response) => response.text())
-    .then((result) => console.log(result))
-    .catch((error) => console.error(error));
+  fetch("http://localhost:5678/api/users/login", requestOptions)
+  .then((response) => response.text())
+  .then(token => {
+    console.log("Token d'identification:", token);
+    //window.location.href = "index.html";
+  })
+  .catch((error) => console.error(error));
 
 }
+*/
 
+function getToken() {
+  //Input log Admin
+  const emailAdmin = document.getElementById("emailAdmin");
+  const password = document.getElementById("password");
 
+  //Conditions qui permettent d'activer la fonction
+  //uniquement sur la page concernées
+  if(emailAdmin){
+    //Récupération des infos entrées pour log 
+    const logForm = document.querySelector(".logForm ")
+    console.log(logForm)
+
+    //Event Listener de l'envoi du formulaire Log Admin
+    logForm.addEventListener("submit", (event)=>{
+      event.preventDefault();
+      let inputEmailAdmin = emailAdmin.value;
+      let inputPasswordAdmin = password.value;
+
+      
+      const adminitrator = {
+        adminEmail : "sophie.bluel@test.tld",
+        adminPassword : "S0phie",
+      };
+      
+
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      
+      const raw = JSON.stringify({
+        email: "sophie.bluel@test.tld",
+        password: "S0phie"
+        });
+        console.log(adminitrator.adminEmail)
+        console.log(adminitrator.adminPassword)
+      if(inputEmailAdmin === adminitrator.adminEmail && inputPasswordAdmin === adminitrator.adminPassword){
+
+        // Configurer les options de la requête
+        const requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+          redirect: "follow"
+        };
+        
+        // Envoyer la requête pour obtenir le token d'identification
+        fetch("http://localhost:5678/api/users/login", requestOptions)
+          .then(response => response.text())
+          .then(token => {
+            // Une fois le token obtenu, vous pouvez le stocker ou l'utiliser comme nécessaire
+            console.log("Token d'identification:", token);
+            let viewAsAdministrator = true
+            console.log(viewAsAdministrator)
+            // Rediriger l'utilisateur vers la page index.html
+          // window.location.href = "index.html";
+          })
+          .catch(error => console.error(error));
+      }else{
+        console.log("Pas log")
+      }
+      })
+
+  }
+}
 
 

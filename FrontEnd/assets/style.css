@@ -60,11 +60,17 @@ body {
 	font-family: 'Work Sans' ;
 	font-size: 14px;
 }
+
 header {
 	display: flex;
 	justify-content: space-between;
 	margin: 50px 0
 }
+
+header a {
+	text-decoration: none;
+}
+
 section {
 	margin: 50px 0
 }
@@ -136,12 +142,26 @@ nav a:hover{
 	margin-bottom: 1em;
 }
 
+.projets{
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: baseline;
+}
+
 .divBtnFilter{
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
 	gap: 10px;
 	margin-top: 50px;
+}
+
+#mod{
+	display: flex;
+	margin-left: 15px;
+	gap: 5px;
+	cursor: pointer;
 }
 
 .btn-filters{
@@ -221,6 +241,18 @@ footer nav ul {
 }
 
 /*Page login*/
+body{
+	background-color: #FFFEF8;
+}
+
+#btnLogin{
+	font-weight: 700;
+}
+
+form{
+margin-top: 50px;
+}
+
 .logForm{
 	display: flex;
 	flex-direction: column;
@@ -233,11 +265,12 @@ footer nav ul {
 	color: #1D6154;
 	text-align: center;
 	margin-bottom: 50px;
+	
 }
 
 .logForm form{
 	width: 20vw;
-	height: 50vh;
+	height: 45vh;
 	justify-content: center;
 	display: flex;
 	flex-direction: column;
@@ -254,6 +287,7 @@ form label{
 .logForm input[type="submit"]{
 	padding: 10px 0;
 	border: none;
+	cursor: pointer;
 }
 
 .logForm input[type="email"], input[type="password"]{
