@@ -63,14 +63,32 @@ body {
 
 header {
 	display: flex;
-	justify-content: space-between;
-	margin: 50px 0
+	flex-direction: column;
+
 }
 
 header a {
 	text-decoration: none;
 }
+.modeEdition{
+	display: none;
+	flex-direction: row;
+	width: 100%;
+	text-align: center;
+	background-color: black;
+	padding: 10px;
+}
 
+.modeEdition p {
+	color: white;
+	width: 100%;
+	text-align: center;
+}
+.headerContenu{
+	display: flex;
+	justify-content: space-between;
+	margin: 50px 0
+}
 section {
 	margin: 50px 0
 }
@@ -158,7 +176,7 @@ nav a:hover{
 }
 
 #mod{
-	display: flex;
+	display: none;
 	margin-left: 15px;
 	gap: 5px;
 	cursor: pointer;
@@ -171,6 +189,7 @@ nav a:hover{
 	border: 1px solid #1D6154;
 	border-radius: 5vw;
 	padding: 5px 20px;
+	cursor: pointer;
 }
 
 .btn-filters:hover{

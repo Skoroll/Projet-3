@@ -1,5 +1,9 @@
-const filterAll = document.getElementById("all");
+//Galerie où apparaissent lest travaux
+gallery = document.querySelector(".gallery")
 
-const filterAppartements = document.getElementById("appartements");
-const filterHAndR = document.getElementById("hotelsAndRestaurants");
+//Boutons de filtre
+const filterAll = document.getElementById("all");
+const filterItems = document.getElementById("items")
+const filterAppartements = document.getElementById("appartements")
+const filterHandR = document.getElementById("hotelsAndRestaurants")
 
