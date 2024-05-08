@@ -126,6 +126,10 @@ nav li {
 	font-size: 1.2em;
 }
 
+#logout{
+	display: none;
+}
+
 li:hover {
 	color: #B1663C;
 }
@@ -180,6 +184,8 @@ nav a:hover{
 	margin-left: 15px;
 	gap: 5px;
 	cursor: pointer;
+	background: none;
+	border: none;
 }
 
 .btn-filters{
@@ -320,3 +326,79 @@ form label{
 	text-align: center;
 	color: black;
 }
+
+
+/*Modale*/
+
+
+.modale{
+position: relative;
+display: flex;
+flex-direction: column;
+width: 50%;
+margin: auto;
+padding: 2%;
+border-radius: 10px ;
+border: #00000017 1px solid;
+}
+
+#modaleTitle {
+	font-family: 'Work Sans' ;
+	font-size: 26px;
+	font-weight: 400;
+	text-align: center;
+	margin-bottom: 20px;
+
+}
+
+#closeModale{
+	position: absolute;
+	cursor: pointer;
+	top: 15px;
+	right: 15px;
+	border: none;
+	background: none ;
+}
+
+#modaleGallery{
+	margin: 20px auto 0 auto;
+	display: grid;
+	grid-template-columns: 80px 80px 80px 80px 80px;
+	grid-column-gap: 20px;
+	grid-row-gap: 20px;
+	padding-bottom: 20px;
+	border-bottom: #00000017 2px solid;
+}
+
+.modale-works{
+position: relative;
+}
+
+.modale-works img{
+	width: 100%;
+}
+
+.trashCan{
+	cursor: pointer;
+	display: flex;
+	position: absolute;
+	background-color: black;
+	width: 25px;
+	height: 25px;
+	border-radius: 5px;
+	top: 5px;
+	right: 5px;
+	align-items: center;
+	justify-content: center;
+	color: white;
+}
+
+.modale input[type="submit"]{
+	cursor: pointer;
+	width: 235px;
+	height: 35px;
+	border-radius: 60px;
+
+
+}
+

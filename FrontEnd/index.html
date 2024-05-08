@@ -23,7 +23,8 @@
 			<ul>
 				<li><a href="index.html">projets</a></li>
 				<li>contact</li>
-				<li> <a href="login.html"> login </a> </li>
+				<li> <a href="login.html" id="login"> login </a> </li>
+				<li id="logout">logout</li>
 				<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 			</ul>
 		</nav>
@@ -43,7 +44,7 @@
 		</article>
 	</section>
 	<section id="portfolio">
-		<div class="projets"><h2>Mes Projets</h2> <p id="mod"><i class="fa-regular fa-pen-to-square"></i>Modifier </p></div>
+		<div class="projets"><h2>Mes Projets</h2> <button id="mod"><i class="fa-regular fa-pen-to-square"></i>Modifier </button></div>
 		<div class="divBtnFilter">
 			<button class="btn-filters" id="all">Tous</button>
 			<button class="btn-filters" id="items">Objets</button>
@@ -51,6 +52,7 @@
 			<button class="btn-filters" id="hotelsAndRestaurants">Hôtels & Restaurants</button>
 		</div>	
 		<div class="gallery">
+			<!--Reçoi dynamiquement l'affichage des éléments-->
 		</div>
 	</section>
 	<section id="contact">
@@ -66,6 +68,17 @@
 			<input type="submit" value="Envoyer">
 		</form>
 	</section>
+
+
+	<div class="modale">
+		<p id="modaleTitle">Galerie photo</p> <button id="closeModale"><i class="fa-solid fa-xmark"></i></i></button>
+		<div id="modaleGallery">
+			<!--Reçoi dynamiquement l'affichage des éléments-->
+		</div>
+		<input type="submit" id="addPhoto" value ="Ajouter une photo">
+	</div>
+
+	
 </main>
 
 <footer>

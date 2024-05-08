@@ -1,6 +1,8 @@
-//Fonction qui crée les éléments HTML suivant les besoin du filtrage
-function addWorksToHTML(set, gallery) {
 
+
+//---------------------Fonction qui crée les éléments HTML suivant les besoin du filtrage
+function addWorksToHTML(set, gallery) {
+  gallery.innerHTML =""
   set.forEach(works => {
     //Crée la base de la carte + ajout à "gallery"
     let figure = document.createElement("figure");
@@ -20,6 +22,9 @@ function addWorksToHTML(set, gallery) {
   });
 }
 
+
+
+//--------------------- Créaction de la gallerie et des filtres
 function createGallery(){
   const requestOptions = {
     method: "GET",
@@ -30,15 +35,12 @@ function createGallery(){
     .then((response) => response.text())
     .then((works) => {
       if(gallery){
+        //Transforme les données de l'API en JSON
+        works = JSON.parse(works);
 
-
-      //Transforme les données de l'API en JSON
-      works = JSON.parse(works);
-      //Récupération de l'élément gallery
-      let gallery = document.querySelector(".gallery");
-      
-      //Condition vérifiant l'existant de la zone .gallery
-      //Si elle existe alors la fonction se joue
+        
+        //Condition vérifiant l'existant de la zone .gallery
+        //Si elle existe alors la fonction se joue
       if(gallery){
         // Création des sets
         let setObjets = new Set();
@@ -46,6 +48,7 @@ function createGallery(){
         let setHandR = new Set();
         let setAll = new Set();
         setAll = works;
+
   
         for (let i = 0; i < works.length; i++) {
           let category = works[i].category.name;
@@ -69,9 +72,7 @@ function createGallery(){
         addWorksToHTML(setAll, gallery)
 
         // Click => Tous les travaux
-        let filterAll = document.getElementById("all")
         filterAll.addEventListener("click", function() {
-          gallery.innerHTML =""
           addWorksToHTML(setAll, gallery);
 
 
@@ -79,63 +80,30 @@ function createGallery(){
         // Click => Objets
         
         filterItems.addEventListener("click", function() {
-          gallery.innerHTML =""
           addWorksToHTML(setObjets, gallery);
       });
         
       // Click => Appartements
     
       filterAppartements.addEventListener("click", function() {
-        gallery.innerHTML =""
         addWorksToHTML(setAppartements, gallery);
       });
       // Click => Hôtel et Restaurants
       
       filterHandR.addEventListener("click", function() {
-        gallery.innerHTML =""
         addWorksToHTML(setHandR, gallery);
       });
 
     }
+    
   }
+
 })
   .catch((error) => console.error(error));
 }
 
 
-
-
-
-
-/*
-//Fonction login
-function apiLogin(){
-  const myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-
-  const raw = JSON.stringify({
-  "email": "sophie.bluel@test.tld",
-  "password": "S0phie"
-  });
-
-  const requestOptions = {
-  method: "POST",
-  headers: myHeaders,
-  body: raw,
-  redirect: "follow"
-  };
-
-  fetch("http://localhost:5678/api/users/login", requestOptions)
-  .then((response) => response.text())
-  .then(token => {
-    console.log("Token d'identification:", token);
-    //window.location.href = "index.html";
-  })
-  .catch((error) => console.error(error));
-
-}
-*/
-
+//---------------------Fonction qui récupère le token dans le localStorage quand log
 function getToken() {
   //Input log Admin
   const emailAdmin = document.getElementById("emailAdmin");
@@ -144,6 +112,7 @@ function getToken() {
   //Conditions qui permettent d'activer la fonction
   //uniquement sur la page concernées
   if(emailAdmin){
+    document.getElementById("login").style.fontWeight = "700"
     //Récupération des infos entrées pour log 
     const logForm = document.querySelector(".logForm ")
 
@@ -161,7 +130,6 @@ function getToken() {
         password: inputPasswordAdmin
         });
 
-        // Configurer les options de la requête
         const requestOptions = {
           method: "POST",
           headers: myHeaders,
@@ -173,37 +141,115 @@ function getToken() {
         fetch("http://localhost:5678/api/users/login", requestOptions)
           .then(response => response.text())
           .then(token => {
-            // Une fois le token obtenu, vous pouvez le stocker ou l'utiliser comme nécessaire
-            localStorage.setItem("Token", token )
-            console.log("Log")
-            // Rediriger l'utilisateur vers la page index.html
+            //Stock le token dans le localStorage
+            localStorage.setItem("token", token )
+
+            // Retour à la page index.html
             window.location.href = "index.html";
           })
           .catch(error => console.error(error));
-
-
       })
-
   }
 }
 
-
-
-// Fonction pour vérifier si le token est présent dans le local storage
+//--------------------- Fonction pour vérifier si le token est présent dans le local storage
 function checkToken() {
   // Récupérer le token depuis le local storage
   const token = localStorage.getItem('token');
 
-  // Vérifier si le token est défini et n'est pas null
+  // Vérifier si le token est défini 
   if (token) {
-    console.log("Heyyy")
-      // Si le token est présent, afficher la div "modeEdition"
+    document.querySelector(".modeEdition").style.display = "flex"
+    document.getElementById("mod").style.display = "flex"
+    document.querySelector(".divBtnFilter").style.display = "none"
 
-  } else {
-      // Si le token n'est pas présent, cacher la div "modeEdition"
 
   }
+  
 }
 
-// Appeler la fonction au chargement de la page pour vérifier le token
-window.onload = checkToken();
+//--------------------- Crée l'affichage des travaux dans la modale
+function modaleContent() {
+  if(modaleGallery)
+  // Récupération des données depuis le serveur
+  fetch("http://localhost:5678/api/works")
+    .then(response => response.json())
+    .then(works => {
+      // Utilisation des données pour créer le contenu de la modale
+      works.forEach(works => {
+        //Crée la base de la carte + ajout à "gallery"
+        let figure = document.createElement("figure");
+        figure.className = "modale-works";
+        modaleGallery.appendChild(figure);
+      
+        // Création et ajout de l'image
+        let worksImg = document.createElement("img");
+        worksImg.src = works.imageUrl;
+        worksImg.alt = works.title; 
+        figure.appendChild(worksImg);
+      
+        let trash = document.createElement("button")
+        trash.className = "trashCan"
+        trash.innerHTML = `<i class="fa-solid fa-trash-can"></i>`
+        figure.appendChild(trash)
+
+        // Crée le titre de la carte
+        let figcaption = document.createElement("figcaption");
+        figcaption.innerText = works.title; 
+        figure.appendChild(figcaption);
+      });
+
+    })
+    .catch(error => console.error(error));
+}
+
+
+  function removeWorks() {
+    // Sélectionner tous les boutons avec la classe "trashCan"
+    const trashCans = document.querySelectorAll(".modale-works button");
+    // Vérifier le nombre de boutons sélectionnés
+    console.log("Nombre de boutons trashCan trouvés :", trashCans.length);
+    // Boucler sur chaque élément et ajouter un eventListener
+    trashCans.forEach(trashCan => {
+      trashCan.addEventListener("click", function() {
+console.log("test")
+    });
+  });
+}
+
+
+//Retire le token quand appellée
+function logout(){
+  localStorage.removeItem('token');
+}  
+
+
+//Quand le bouton "logout" est cliqué alors retire le statut d'administrateur
+function clickLogOut(){
+  if (localStorage.getItem('token')) {
+    document.getElementById("login").style.display = "none"
+    document.getElementById("logout").style.display = "flex"
+    document.getElementById("logout").style.fontWeight = "700"  
+  }
+  let btnLogout = document.getElementById("logout")
+  btnLogout.addEventListener("click", () =>{
+    logout()
+    location.reload();
+  })
+}
+
+//Ferme la modale
+function modaleClosing(){
+  closeModale.addEventListener("click", ()=>{
+
+//Todo
+
+  })
+}
+
+//Apparition de la modale en cliquant sur "modifier"
+function openPopUp(){
+  mod.addEventListener("click", ()=>{
+    console.log("WIP")
+  })
+}
