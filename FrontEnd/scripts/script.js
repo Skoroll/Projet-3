@@ -9,9 +9,7 @@ getToken()
 modaleContent() 
 
 //Retire les travaux
-document.addEventListener("DOMContentLoaded", function() {
     removeWorks();
-});
 
 //Se déconnecter
 clickLogOut()
@@ -24,3 +22,9 @@ openPopUp()
 
 //Fermeture de la modale
 modaleClosing()
+
+//Bouton changement panneau modale
+const addPhoto = document.getElementById("addPhoto")
+
+
+

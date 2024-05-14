@@ -137,18 +137,26 @@ function getToken() {
           redirect: "follow"
         };
         
-        // Envoyer la requête pour obtenir le token d'identification
-        fetch("http://localhost:5678/api/users/login", requestOptions)
-          .then(response => response.text())
-          .then(token => {
-            //Stock le token dans le localStorage
-            localStorage.setItem("token", token )
+      // Envoyer la requête pour obtenir le token d'identification
+      fetch("http://localhost:5678/api/users/login", requestOptions)
+        .then(response => {
+          if (response.ok) {
+            return response.text();
+          } else {
+            erreurLog.style.display = "flex"
+            console.log("test")
+            throw new Error("Identifiants incorrects");
+          }
+        })
+        .then(token => {
+          // Stock le token dans le localStorage
+          localStorage.setItem("token", token);
 
-            // Retour à la page index.html
-            window.location.href = "index.html";
-          })
-          .catch(error => console.error(error));
-      })
+          // Retour à la page index.html
+          window.location.href = "index.html";
+        })
+        .catch(error => console.error(error));
+    });
   }
 }
 
@@ -162,6 +170,7 @@ function checkToken() {
     document.querySelector(".modeEdition").style.display = "flex"
     document.getElementById("mod").style.display = "flex"
     document.querySelector(".divBtnFilter").style.display = "none"
+    document.querySelector(".modale").style.display = "flex"
 
 
   }
@@ -188,15 +197,12 @@ function modaleContent() {
         worksImg.alt = works.title; 
         figure.appendChild(worksImg);
       
+        //Crée le bouton poubelle
         let trash = document.createElement("button")
         trash.className = "trashCan"
         trash.innerHTML = `<i class="fa-solid fa-trash-can"></i>`
         figure.appendChild(trash)
 
-        // Crée le titre de la carte
-        let figcaption = document.createElement("figcaption");
-        figcaption.innerText = works.title; 
-        figure.appendChild(figcaption);
       });
 
     })
@@ -204,17 +210,18 @@ function modaleContent() {
 }
 
 
-  function removeWorks() {
-    // Sélectionner tous les boutons avec la classe "trashCan"
-    const trashCans = document.querySelectorAll(".modale-works button");
-    // Vérifier le nombre de boutons sélectionnés
-    console.log("Nombre de boutons trashCan trouvés :", trashCans.length);
-    // Boucler sur chaque élément et ajouter un eventListener
-    trashCans.forEach(trashCan => {
-      trashCan.addEventListener("click", function() {
-console.log("test")
-    });
-  });
+
+function removeWorks() {
+  // Sélectionner tous les boutons avec la classe "trashCan"
+  let trashCans = document.querySelectorAll(".trashCan");
+  // Vérifier le nombre de boutons sélectionnés
+  console.log("Nombre de boutons trashCan trouvés :", trashCans.length);
+  // Boucler sur chaque élément et ajouter un eventListener
+  for (let i = 0; i < trashCans.length; i++) {
+      trashCans[i].addEventListener("click", function() {
+          console.log("test");
+      });
+  }
 }
 
 
@@ -240,16 +247,46 @@ function clickLogOut(){
 
 //Ferme la modale
 function modaleClosing(){
+  bgModale.style.display = "none"
+
   closeModale.addEventListener("click", ()=>{
-
-//Todo
-
+    bgModale.style.display = "none"
   })
 }
+// Fermeture modale quand clic en dehors
+document.addEventListener("click", function(event) {
+    // Vérifier si le clic n'est pas à l'intérieur de la fenêtre modale mais dans la div bgModale
+    if (!modale.contains(event.target) && bgModale.contains(event.target) && event.target !== modaleGallery) {
+        modaleClosing();
+    }
+});
 
 //Apparition de la modale en cliquant sur "modifier"
 function openPopUp(){
-  mod.addEventListener("click", ()=>{
-    console.log("WIP")
-  })
+     if(gallery){
+       mod.addEventListener("click", ()=>{
+         bgModale.style.display = "flex"
+
+     })
+  }
 }
+
+
+//Change contenu de la modale
+function changeModaleContent(){
+  modaleTitle.innerText = "Ajout photo";
+  
+}
+
+
+addPhoto.addEventListener("click", (event)=>{
+  event.preventDefault();
+  changeModaleContent()
+
+})
+
+
+
+
+
+
