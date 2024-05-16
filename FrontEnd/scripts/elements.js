@@ -1,6 +1,6 @@
 //Galerie où apparaissent les travaux
 let gallery = document.querySelector(".gallery");
-const modaleGallery = document.getElementById("modaleGallery");
+
 const modale = document.querySelector(".modale");
 
 //Titre modale
@@ -21,3 +21,7 @@ const mod = document.getElementById("mod");
 
 //Message d'erreur mauvais log
 let erreurLog = document.getElementById("erreurLog");
+
+//Input log Admin
+const emailAdmin = document.getElementById("emailAdmin");
+const password = document.getElementById("password");

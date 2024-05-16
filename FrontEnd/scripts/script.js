@@ -1,15 +1,15 @@
 
+
+
+
 //Création de la gallerie de travaux
 createGallery()
 
 //Obtient le token d'identification
 getToken()
 
-//Crée le contenu de la modale
-modaleContent() 
-
 //Retire les travaux
-    removeWorks();
+removeWorks();
 
 //Se déconnecter
 clickLogOut()
@@ -24,7 +24,7 @@ openPopUp()
 modaleClosing()
 
 //Bouton changement panneau modale
-const addPhoto = document.getElementById("addPhoto")
+const addPhotoButton = document.getElementById("addPhoto")
 
 
 

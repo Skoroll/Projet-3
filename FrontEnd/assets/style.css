@@ -355,14 +355,16 @@ form label{
   }
 
 .modale{
-cursor: initial;
-display: flex;
-position: relative;
-flex-direction: column;
-margin: 0;
-padding: 45px 80px;
-border-radius: 10px ;
-z-index: 1;
+	cursor: initial;
+	display: flex;
+	position: relative;
+	flex-direction: column;
+	margin: 0;
+	padding: 45px 80px;
+	border-radius: 10px ;
+	z-index: 1;
+	width: 35%;
+	height: 75%;
 
 background-color: #FFFEF8;
 }
@@ -385,12 +387,20 @@ background-color: #FFFEF8;
 	background: none ;
 }
 
+.fa-arrow-left{
+	position: absolute;
+	cursor: pointer;
+	top: 15px;
+	left: 15px;
+	font-size: 20px;
+}
+
 #modaleGallery{
 	margin: 20px auto 0 auto;
 	display: grid;
 	grid-template-columns: 80px 80px 80px 80px 80px;
-	grid-column-gap: 20px;
-	grid-row-gap: 20px;
+	grid-column-gap: 5px;
+	grid-row-gap: 5px;
 	padding-bottom: 20px;
 	border-bottom: #00000017 2px solid;
 }
@@ -423,7 +433,95 @@ position: relative;
 	width: 235px;
 	height: 35px;
 	border-radius: 60px;
-
-
 }
 
+
+
+
+
+.test{
+	position: relative;
+	width: 400px;
+	height: 400px;
+}
+
+
+.drop-area {
+	width: 100%;
+	background-color: #E8F1F6;
+	text-align: center;
+  }
+  
+  .file-label {
+	display: none;
+  }
+  
+  .gallery {
+	margin-top: 20px;
+  }
+  
+  .thumbnail {
+	display: flex;
+	max-width: 200px;
+	max-height: 150px;
+	margin-left : auto ;
+	margin-right: auto ; 
+  }
+  
+#no-image-icon {
+  font-size: 50px;
+  opacity: 0.3;
+}
+
+#noImageText{
+	margin-top: 10px;
+	color: #444444;
+}
+
+
+#labelTitle{
+	margin: 0;
+}
+
+
+
+#dropArea{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	margin-bottom: 30px;
+	height: 150px;
+}
+
+#titre,#categories{
+	margin-bottom: 20px;
+	width: 100%;
+	height: 25px;
+	border: none;
+	box-shadow: 0px 4px 14px 0px #00000017;
+}
+
+#btnValider{
+	cursor: pointer;
+	font-family: 'Syne';
+	font-weight: 700;
+	color: white;
+	margin : 2em auto ;
+	width: 180px;
+	height: 30px;
+	text-align: center;
+	border-radius: 60px ;
+}
+
+
+#btnInputPhoto{
+	cursor: pointer;
+	width: 150px;
+	height: 30px;
+	margin: 5px auto 0 auto ;
+	padding: 5px;
+	background-color: #bfd0da ;
+	border: none;
+	border-radius: 10px;
+	color: #53839e ;
+}
