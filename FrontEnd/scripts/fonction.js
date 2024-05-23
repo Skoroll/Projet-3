@@ -197,7 +197,7 @@ function checkToken() {
   }
 }
 
-//WIP
+//Retire les travaux dans la modale
 function removeWorks() {
   // Sélectionner tous les boutons avec la classe "trashCan"
   let trashCans = document.querySelectorAll(".trashCan");
@@ -207,8 +207,6 @@ function removeWorks() {
       trashCans[i].addEventListener("click", function() {
         let id = trashCans[i].dataset.numeroFigure
         let figureTargeted = document.getElementById(`figure_${id}`)
-        console.log(figureTargeted)
-        console.log(id)
 
         //Token json parse
         const obj = JSON.parse(localStorage.getItem("token"));
@@ -353,6 +351,7 @@ function creationModale(){
 
       // Création de l'élément label Titre
       let labelTitle = document.createElement("label");
+      labelTitle.for = ("titre")
       labelTitle.textContent = "Titre";
       labelTitle.id = "labelTitle"
 
@@ -380,15 +379,32 @@ function creationModale(){
       emptyOption.textContent = ""; // Texte vide
       select.appendChild(emptyOption);
 
-      // Options de catégorie
-      let options = ["Objets", "Appartements", "Hôtel & Restaurants"];
-      options.forEach(optionText => {
-          let option = document.createElement("option");
-          option.value = optionText.toLowerCase().replace(/\s+/g, '_'); // Valeur de l'option en minuscules et avec des underscores à la place des espaces
-          option.textContent = optionText;
-          select.appendChild(option);
-      });
 
+    //Token json parse
+    const obj = JSON.parse(localStorage.getItem("token"));
+
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization",`Bearer ${obj.token}` );
+      
+      const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow"
+      };
+      
+      fetch("http://localhost:5678/api/categories", requestOptions)
+        .then((response) => response.text())
+        .then((options) =>{
+          options = JSON.parse(options)
+            // Options de catégorie
+            options.forEach(option => {
+            let optionHTML = document.createElement("option");
+            optionHTML.textContent = option.name;
+            optionHTML.value = option.id;
+            select.appendChild(optionHTML);
+            })
+        })
+        .catch((error) => console.error(error));
 
       //Crée bouton Valider
       let btnValider = document.createElement("button");
@@ -398,34 +414,6 @@ function creationModale(){
       btnValider.style.background = "#a8a4a4"
       btnValider.disabled = true
 
-
-      btnInputPhoto.addEventListener('click', function() {
-        let inputPhoto = document.createElement('input');
-        inputPhoto.type = 'file';
-        
-        inputPhoto.onchange = function(e) {
-            let file = e.target.files[0];
-            let reader = new FileReader(); // Créer un objet FileReader
-            
-            reader.onload = function(event) {
-                // Créer un élément image
-                let img = document.createElement('img');
-                img.src = event.target.result; // Récupérer l'URL de données de l'image
-                img.alt = 'Image uploadée';
-                img.classList.add('thumbnail');
-                
-                // Afficher l'image dans la div dropArea
-                dropArea.innerHTML = ''; // Supprimer le contenu existant de la div
-                dropArea.appendChild(img); // Ajouter l'image à la div
-            };
-            
-            reader.readAsDataURL(file); // Lire le contenu du fichier en tant qu'URL de données
-        }
-        
-        inputPhoto.click();
-    });
-
-
       // Ajout des éléments à la dropArea
       dropArea.appendChild(noImageIcon);
       dropArea.appendChild(btnInputPhoto)
@@ -433,9 +421,9 @@ function creationModale(){
 
       // Ajout de la dropArea à l'intérieur de la div avec l'ID "modaleGallery"
       modaleGallery = document.getElementById('modaleGallery');
-      modaleGallery.style.display = "flex"
-      modaleGallery.style.flexDirection = "column"
-      modaleGallery.style.gap = "5px"
+      modaleGallery.style.display = "flex";
+      modaleGallery.style.flexDirection = "column";
+      modaleGallery.style.gap = "5px";
 
       //Rajoute les elements de la 2eme page modale à la gallerie
       modaleGallery.appendChild(dropArea);
@@ -444,6 +432,7 @@ function creationModale(){
       modaleGallery.appendChild(labelCategory)
       modaleGallery.appendChild(select)
    
+    
       modale.appendChild(btnValider);
 
     // Fonction pour vérifier si tous les champs sont remplis
@@ -452,6 +441,7 @@ function creationModale(){
           btnValider.style.background = "#1D6154";
           btnValider.disabled = false;
           clickToSubmitWorks()
+          
       } else {
           btnValider.style.background = "#a8a4a4";
           btnValider.disabled = true;
@@ -461,6 +451,7 @@ function creationModale(){
   // Écouteurs d'événements pour vérifier la validité du formulaire
   inputTitle.addEventListener('input', checkFormValidity);
   select.addEventListener('change', checkFormValidity);
+
 
   btnInputPhoto.addEventListener('click', function() {
       let inputPhoto = document.createElement('input');
@@ -476,7 +467,8 @@ function creationModale(){
               img.src = event.target.result; // Récupérer l'URL de données de l'image
               img.alt = 'Image uploadée';
               img.classList.add('thumbnail');
-              
+              img.id = "imgToUpload"
+              console.log(img)
               // Afficher l'image dans la div dropArea
               dropArea.innerHTML = ''; // Supprimer le contenu existant de la div
               dropArea.appendChild(img); // Ajouter l'image à la div
@@ -484,10 +476,8 @@ function creationModale(){
               // Vérifier la validité du formulaire après l'upload
               checkFormValidity();
           };
-          
           reader.readAsDataURL(file); // Lire le contenu du fichier en tant qu'URL de données
       }
-      
       inputPhoto.click();
   });
 
@@ -502,11 +492,43 @@ function creationModale(){
     }) 
 }
 
-
+ //----------------------------Envoi des fichiers sur l'API---------------------
 function clickToSubmitWorks(){
-  btnValider.addEventListener("click", ()=>{
-    console.log("click")
-  })
+  btnValider.addEventListener("click", (event)=>{
+    event.preventDefault();
+
+    //Token json parse
+    const obj = JSON.parse(localStorage.getItem("token"));
+
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization",`Bearer ${obj.token}` );
+
+    //Change le résultat de la catégorie en nombre
+    let resulteCategories = Number(document.getElementById("categories").value)
+    
+    // Vérifiez si l'image est déjà en base64
+    const imageBase64 = document.getElementById("imgToUpload").src.startsWith("data:image") ? document.getElementById("imgToUpload").src : ""; 
+
+    //Donnés à envoyer dans la requête
+    const raw = JSON.stringify({
+      image: imageBase64,
+      title: document.getElementById("titre").value ,
+      category: resulteCategories  
+      });
+      
+      console.log(raw)
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body : JSON.stringify(raw),
+      redirect: "follow"
+    };
+
+    fetch("http://localhost:5678/api/works/", requestOptions)
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((error) => console.error(error));
+      })
 }
 
   //---------------------Crée le contenu dans la modale---------------------
@@ -542,11 +564,8 @@ function clickToSubmitWorks(){
     })
     .catch(error => console.error(error));
   }
-  
 
-
-
-//----------------------------Fonctions au lancement de la page
+//----------------------------Fonctions au lancement de la page---------------------
 //Création de la gallerie de travaux
 createGallery()
 

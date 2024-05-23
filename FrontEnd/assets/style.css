@@ -356,17 +356,16 @@ form label{
 
 .modale{
     cursor: initial;
-    display: flex;
     position: relative;
     flex-direction: column;
     margin: 0;
-    padding: 15px 0px;
+    padding: 40px 5px 10px 5px;
     border-radius: 10px;
     z-index: 1;
     width: 35%;
-	min-width: 400px;
-	height: 90%;
-    max-height: 65%;
+	height: 65%;
+	min-width: 350px;
+
     background-color: #FFFEF8;
 }
 
@@ -396,14 +395,13 @@ form label{
 }
 
 #modaleGallery{
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
+	display: grid;
 	justify-content: center;
 	width: 90%;
+	height: auto;
 	margin: 20px auto 0 auto;
 	overflow: auto;
-	display: grid;
+
 	grid-template-columns: repeat(auto-fill, 80px);
 	grid-column-gap: 5px;
 	grid-row-gap: 5px;
@@ -417,6 +415,7 @@ position: relative;
 
 .modale-works img{
 	width: 100%;
+	height: 100px;
 }
 
 .trashCan{
@@ -448,7 +447,7 @@ position: relative;
 }
 
 
-#addPhoto{
+#addPhoto, #btnValider{
 	align-items: flex-end;
 	margin-top: auto;
 	margin-bottom: 5px;
