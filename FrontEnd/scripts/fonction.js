@@ -9,6 +9,14 @@ let setAppartements = new Set();
 let setHandR = new Set();
 let setAll = new Set();
 
+let modaleGallery = document.createElement("div");
+let addPhotoButton = document.createElement("input");
+let labelTitle = document.createElement("label");
+let labelCategory = document.createElement("label");
+let emptyOption = document.createElement("option");
+const arrowLeft = document.createElement("i");
+
+
 
 //Titre modale
 let modalTitle = document.getElementById("modaleTitle");
@@ -262,12 +270,12 @@ function modaleClosing(){
 
 // Fermeture modale quand clic en dehors
 document.addEventListener("click", function(event) {
-    // Vérifier si le clic n'est pas à l'intérieur de la fenêtre modale mais dans la div bgModale
-    if(gallery){
-      if (!modale.contains(event.target) && bgModale.contains(event.target) && event.target !== modaleGallery) {
-          modaleClosing();
-      }
+  // Vérifier si le clic n'est pas à l'intérieur de la fenêtre modale mais dans la div bgModale
+  if(gallery){
+    if (!modale.contains(event.target) && bgModale.contains(event.target) && event.target !== modaleGallery) {
+        modaleClosing();
     }
+  }
 });
 
 //Apparition de la modale en cliquant sur "modifier"
@@ -281,218 +289,251 @@ function openPopUp(){
   }
 }
 
-
 //---------------------Modale---------------------
 
-//Crée la modale et l'affichage de son premier panneau
-function creationModale(){
-  // Création du titre et du bouton de fermeture
+// Création du titre et du bouton de fermeture
+function modaleTitleFunct(){
   let modaleTitle = document.createElement("p");
   modaleTitle.id = "modaleTitle";
   modaleTitle.textContent = "Galerie photo";
   modale.appendChild(modaleTitle);
+}
 
+// Création de la galerie
+function modaleGalleryCreation(){
+  modaleGallery = document.createElement("div");
+  modaleGallery.id = "modaleGallery";
+  modale.appendChild(modaleGallery);
+  fetchAndDisplayModaleGallery()
+}
+
+// Ajout du bouton "Ajouter une photo"
+function createAddPhotoButton(){
+  addPhotoButton = document.createElement("input");
+  addPhotoButton.type = "submit";
+  addPhotoButton.id = "addPhoto";
+  addPhotoButton.value = "Ajouter une photo";
+  modale.appendChild(addPhotoButton);
+}
+
+//Retire tout le contenu de modaleGallery
+function resetGallery(){
+    modaleGallery.innerHTML = "";
+    modaleGallery.style.margin = "auto";
+    addPhotoButton.style.display = "none"
+    //Change le texte du titre
+    modaleTitle.innerText = "Ajout photo";
+}
+
+//Crée la flèche de retour en arrière
+function arrowLeftBack(){
+
+  arrowLeft.className = 'fa-solid fa-arrow-left arrowLeft';
+  modale.appendChild(arrowLeft);
+  modale.appendChild(modaleGallery)
+
+  //EventListener flêche retour arrière
+  arrowLeft.addEventListener("click", ()=>{
+  modale.innerHTML ="";
+  creationModale()
+  }) 
+}
+
+
+let isCategoryFetched = false; // Permet à fetchCategory() de ne pas se lancer si "true", évite duplication des options
+
+function fetchCategory() {
+  if (isCategoryFetched) {
+    return;
+  }
+
+  // isCategoryFetched passe true pour ne pas relancer la fonction inutilement au reload modale
+  isCategoryFetched = true;
+
+  // Token json parse
+  const obj = JSON.parse(localStorage.getItem("token"));
+
+  const myHeaders = new Headers();
+  myHeaders.append("Authorization", `Bearer ${obj.token}`);
+
+  const requestOptions = {
+    method: "GET",
+    headers: myHeaders,
+    redirect: "follow"
+  };
+
+  fetch("http://localhost:5678/api/categories", requestOptions)
+    .then((response) => response.text())
+    .then((options) => {
+      options = JSON.parse(options);
+      // Options de catégorie
+      options.forEach(option => {
+        let optionHTML = document.createElement("option");
+        optionHTML.textContent = option.name;
+        optionHTML.value = option.id;
+        select.appendChild(optionHTML);
+      });
+    })
+    .catch((error) => console.error(error));
+}
+
+/*let isCreateInputsUploadFiles = false;
+if (isCreateInputsUploadFiles) {
+  return;
+}*/
+
+function createInputsUploadFiles(){
+
+  isCreateInputsUploadFiles = true;
+        // Zone upload photo
+        const dropArea = document.createElement('div');
+        dropArea.id = 'dropArea';
+        dropArea.classList.add('drop-area');
+  
+        
+        //Crée bouton "+ Ajouter Photo"
+        btnInputPhoto = document.createElement("button");
+        btnInputPhoto.innerText = "+ Ajouter Photo";
+        btnInputPhoto.id = "btnInputPhoto"
+  
+        //Ajoute le logo d'image lorsque pas d'upload
+        const noImageIcon = document.createElement('i');
+        noImageIcon.id = 'no-image-icon';
+        noImageIcon.classList.add('fa-regular', 'fa-image');
+  
+        //Ajoute le texte lorsque pas d'upload
+        const noImageText = document.createElement('p');
+        noImageText.id = 'noImageText';
+        noImageText.textContent = 'jpg, png : 4mo max';
+  
+        // Création de l'élément label Titre
+        labelTitle.for = ("titre")
+        labelTitle.textContent = "Titre";
+        labelTitle.id = "labelTitle"
+  
+        // Création de l'élément input
+        inputTitle.type = "text";
+        inputTitle.id = "titre"; // identifiant pour lier l'input et le labelTitle
+  
+        // Ajout de l'input à l'intérieur du labelTitle
+        labelTitle.appendChild(inputTitle);
+  
+        
+        // Crée l'input et catégorie + label
+   
+        labelCategory.textContent = "Catégorie";
+        labelCategory.id = "labelCategory";
+  
+        // Création de l'élément select
+        select.id = "categories"; // identifiant pour l'élément select
+  
+        // Option vide
+     
+        emptyOption.value = ""; // Valeur vide
+        emptyOption.textContent = ""; // Texte vide
+        select.appendChild(emptyOption);
+  
+  
+  
+  
+        //Crée bouton Valider
+        let btnValider = document.createElement("button");
+        btnValider.type = "submit"
+        btnValider.id = "btnValider"
+        btnValider.innerText = "Valider"
+        btnValider.style.background = "#a8a4a4"
+        btnValider.disabled = true
+  
+        // Ajout des éléments à la dropArea
+        dropArea.appendChild(noImageIcon);
+        dropArea.appendChild(btnInputPhoto)
+        dropArea.appendChild(noImageText);
+  
+        // Ajout de la dropArea à l'intérieur de la div avec l'ID "modaleGallery"
+        modaleGallery = document.getElementById('modaleGallery');
+        modaleGallery.style.display = "flex";
+        modaleGallery.style.flexDirection = "column";
+        modaleGallery.style.gap = "5px";
+  
+        //Rajoute les elements de la 2eme page modale à la gallerie
+        modaleGallery.appendChild(dropArea);
+        modaleGallery.appendChild(labelTitle)
+        modaleGallery.appendChild(inputTitle)
+        modaleGallery.appendChild(labelCategory)
+        modaleGallery.appendChild(select)
+     
+      
+        modale.appendChild(btnValider);
+}
+
+
+//Crée la modale et l'affichage de son premier panneau
+function creationModale(){
+  modaleTitleFunct()
   //Création du bouton de fermeture "X"
   let closeModale = document.createElement("button");
   closeModale.id = "closeModale";
   closeModale.innerHTML = '<i class="fa-solid fa-xmark"></i>';
   modale.appendChild(closeModale);
 
-  // Création de la galerie
-  let modaleGallery = document.createElement("div");
-  modaleGallery.id = "modaleGallery";
-  modale.appendChild(modaleGallery);
-  fetchAndDisplayModaleGallery()
-  // Ajout du bouton "Ajouter une photo"
-  let addPhotoButton = document.createElement("input");
-  addPhotoButton.type = "submit";
-  addPhotoButton.id = "addPhoto";
-  addPhotoButton.value = "Ajouter une photo";
-  modale.appendChild(addPhotoButton);
+  modaleGalleryCreation()
+  createAddPhotoButton()
 
   // Ajout de l'événement de clic au bouton de fermeture
   closeModale.addEventListener("click", function() {
     bgModale.style.display = "none";
   });
 
-    //Bouton "Ajouter une photo" + création de tous les éléments de la galerie d'upload
-    addPhotoButton.addEventListener("click", (event)=>{
+  //Bouton "Ajouter une photo" + création de tous les éléments de la galerie d'upload
+  addPhotoButton.addEventListener("click", (event)=>{
+    resetGallery()
+    arrowLeftBack()
+    modaleGallery.style.overflow = "hidden"
+    createInputsUploadFiles()
+    fetchCategory()
 
-      //Retire tout le contenu de modaleGallery
-      modaleGallery.innerHTML = "";
-      modaleGallery.style.margin = "auto";
-      addPhotoButton.style.display = "none"
-      //Change le texte du titre
-      modaleTitle.innerText = "Ajout photo";
-      
-      //Crée la flèche de retour en arrière
-      const arrowLeft = document.createElement("i");
-      arrowLeft.className = 'fa-solid fa-arrow-left arrowLeft';
-      modale.appendChild(arrowLeft);
-      modale.appendChild(modaleGallery)
-     
-      modaleGallery.style.overflow = "hidden"
+    // Écouteurs d'événements pour vérifier la validité du formulaire
+    inputTitle.addEventListener('input', checkFormValidity);
+    select.addEventListener('change', checkFormValidity);
 
-      // Zone upload photo
-      const dropArea = document.createElement('div');
-      dropArea.id = 'dropArea';
-      dropArea.classList.add('drop-area');
-
-      
-      //Crée bouton "+ Ajouter Photo"
-      btnInputPhoto = document.createElement("button");
-      btnInputPhoto.innerText = "+ Ajouter Photo";
-      btnInputPhoto.id = "btnInputPhoto"
-
-      //Ajoute le logo d'image lorsque pas d'upload
-      const noImageIcon = document.createElement('i');
-      noImageIcon.id = 'no-image-icon';
-      noImageIcon.classList.add('fa-regular', 'fa-image');
-
-      //Ajoute le texte lorsque pas d'upload
-      const noImageText = document.createElement('p');
-      noImageText.id = 'noImageText';
-      noImageText.textContent = 'jpg, png : 4mo max';
-
-      // Création de l'élément label Titre
-      let labelTitle = document.createElement("label");
-      labelTitle.for = ("titre")
-      labelTitle.textContent = "Titre";
-      labelTitle.id = "labelTitle"
-
-      // Création de l'élément input
-      inputTitle.type = "text";
-      inputTitle.id = "titre"; // identifiant pour lier l'input et le labelTitle
-
-      // Ajout de l'input à l'intérieur du labelTitle
-      labelTitle.appendChild(inputTitle);
-
-      
-      // Crée l'input et catégorie + label
-      let labelCategory = document.createElement("label");
-      labelCategory.textContent = "Catégorie";
-      labelCategory.id = "labelCategory";
-
-      // Création de l'élément select
-      select.id = "categories"; // identifiant pour l'élément select
-
-      // Option vide
-      let emptyOption = document.createElement("option");
-      emptyOption.value = ""; // Valeur vide
-      emptyOption.textContent = ""; // Texte vide
-      select.appendChild(emptyOption);
-
-
-    //Token json parse
-    const obj = JSON.parse(localStorage.getItem("token"));
-
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization",`Bearer ${obj.token}` );
-      
-      const requestOptions = {
-        method: "GET",
-        headers: myHeaders,
-        redirect: "follow"
-      };
-      
-      fetch("http://localhost:5678/api/categories", requestOptions)
-        .then((response) => response.text())
-        .then((options) =>{
-          options = JSON.parse(options)
-            // Options de catégorie
-            options.forEach(option => {
-            let optionHTML = document.createElement("option");
-            optionHTML.textContent = option.name;
-            optionHTML.value = option.id;
-            select.appendChild(optionHTML);
-            })
-        })
-        .catch((error) => console.error(error));
-
-      //Crée bouton Valider
-      let btnValider = document.createElement("button");
-      btnValider.type = "submit"
-      btnValider.id = "btnValider"
-      btnValider.innerText = "Valider"
-      btnValider.style.background = "#a8a4a4"
-      btnValider.disabled = true
-
-      // Ajout des éléments à la dropArea
-      dropArea.appendChild(noImageIcon);
-      dropArea.appendChild(btnInputPhoto)
-      dropArea.appendChild(noImageText);
-
-      // Ajout de la dropArea à l'intérieur de la div avec l'ID "modaleGallery"
-      modaleGallery = document.getElementById('modaleGallery');
-      modaleGallery.style.display = "flex";
-      modaleGallery.style.flexDirection = "column";
-      modaleGallery.style.gap = "5px";
-
-      //Rajoute les elements de la 2eme page modale à la gallerie
-      modaleGallery.appendChild(dropArea);
-      modaleGallery.appendChild(labelTitle)
-      modaleGallery.appendChild(inputTitle)
-      modaleGallery.appendChild(labelCategory)
-      modaleGallery.appendChild(select)
-   
-    
-      modale.appendChild(btnValider);
-
-    // Fonction pour vérifier si tous les champs sont remplis
-    function checkFormValidity() {
-      if (inputTitle.value !== "" && select.value !== "" && dropArea.querySelector('img')) {
-          btnValider.style.background = "#1D6154";
-          btnValider.disabled = false;
-          clickToSubmitWorks()
-          
-      } else {
-          btnValider.style.background = "#a8a4a4";
-          btnValider.disabled = true;
-      }
-  }
-
-  // Écouteurs d'événements pour vérifier la validité du formulaire
-  inputTitle.addEventListener('input', checkFormValidity);
-  select.addEventListener('change', checkFormValidity);
-
-
-  btnInputPhoto.addEventListener('click', function() {
+    btnInputPhoto.addEventListener('click', function() {
       let inputPhoto = document.createElement('input');
       inputPhoto.type = 'file';
       
       inputPhoto.onchange = function(e) {
         selectedFile = e.target.files[0];
         let reader = new FileReader(); // Créer un objet FileReader
-          
-          reader.onload = function(event) {
-              // Créer un élément image
-              imgInput.src = event.target.result; // Récupérer l'URL de données de l'image
-              imgInput.alt = 'Image uploadée';
-              imgInput.classList.add('thumbnail');
-              imgInput.id = "imgToUpload"
-
-              // Afficher l'image dans la div dropArea
-              dropArea.innerHTML = ''; // Supprimer le contenu existant de la div
-              dropArea.appendChild(imgInput); // Ajouter l'image à la div
-
-              // Vérifier la validité du formulaire après l'upload
-              checkFormValidity();
-          };
+        reader.onload = function(event) {
+          // Créer un élément image
+          imgInput.src = event.target.result; // Récupérer l'URL de données de l'image
+          imgInput.alt = 'Image uploadée';
+          imgInput.classList.add('thumbnail');
+          imgInput.id = "imgToUpload"
+          // Afficher l'image dans la div dropArea
+          dropArea.innerHTML = ''; // Supprimer le contenu existant de la div
+          dropArea.appendChild(imgInput); // Ajouter l'image à la div
+          // Vérifier la validité du formulaire après l'upload
+          checkFormValidity();
+        };
           reader.readAsDataURL(selectedFile); // Lire le contenu du fichier en tant qu'URL de données
       }
       inputPhoto.click();
-  });
-
-
-      //EventListener flêche retour arrière
-      arrowLeft.addEventListener("click", ()=>{
-      //Retire tout le contenu de modaleGallery
-      modale.innerHTML ="";
-      //Appel de la fonction creationModale pour réinitialiser le contenu de la modale
-      creationModale()
-        }) 
-    }) 
+    });
+  }) 
 }
+
+// Fonction pour vérifier si tous les champs sont remplis
+function checkFormValidity() {
+  if (inputTitle.value !== "" && select.value !== "" && dropArea.querySelector('img')) {
+      btnValider.style.background = "#1D6154";
+      btnValider.disabled = false;
+      clickToSubmitWorks()  
+  } else {
+      btnValider.style.background = "#a8a4a4";
+      btnValider.disabled = true;
+  }
+}
+
 
  //----------------------------Envoi des fichiers sur l'API---------------------
  function clickToSubmitWorks() {
@@ -575,7 +616,6 @@ function creationModale(){
 }
 
 
-
 //---------------------Crée le contenu dans la modale---------------------
 // Récupération des données depuis le serveur
 function fetchAndDisplayModaleGallery() {
@@ -633,4 +673,4 @@ modaleClosing()
 
 
 //Bouton changement panneau modale
-const addPhotoButton = document.getElementById("addPhoto");
+addPhotoButton = document.getElementById("addPhoto");
