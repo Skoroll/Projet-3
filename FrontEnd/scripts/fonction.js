@@ -3,8 +3,15 @@ let gallery = document.querySelector(".gallery");
 
 const modale = document.querySelector(".modale");
 
+// Création des sets
+let setObjets = new Set();
+let setAppartements = new Set();
+let setHandR = new Set();
+let setAll = new Set();
+
+
 //Titre modale
-let modaleTitle = document.getElementById("modaleTitle");
+let modalTitle = document.getElementById("modaleTitle");
 
 //Boutons de filtre
 const filterAll = document.getElementById("all");
@@ -26,8 +33,11 @@ let erreurLog = document.getElementById("erreurLog");
 const emailAdmin = document.getElementById("emailAdmin");
 const password = document.getElementById("password");
 
-
-
+//Input envoi API
+let imgInput = document.createElement('img'); //Affiche l'image uploadé en thumbnail
+let selectedFile; //Pour envoyer l'image à l'upload
+let inputTitle = document.createElement("input"); //Input du titre à l'upload
+let select = document.createElement("select"); // Input catégorie à l'upload
 
 //---------------------Fonction qui crée les éléments HTML suivant les besoin du filtrage---------------------
 function addWorksToHTML(set, gallery) {
@@ -52,6 +62,50 @@ function addWorksToHTML(set, gallery) {
 }
 
 
+function placeWorksOnFilter(data){
+  for (let i = 0; i < data.length; i++) {
+    let category = data[i].category.name;
+
+    // Ajout des works au sets
+    switch (category) {
+      case "Objets":
+        setObjets.add(data[i]);
+      break;
+
+      case "Appartements":
+        setAppartements.add(data[i]);
+      break;
+
+      case "Hotels & restaurants":
+        setHandR.add(data[i]);
+      break;
+    }
+  }
+}
+
+
+//---------------------Filtres---------------------
+function filtersListeners(){
+  //Appel de la fonction pour créer la galerie initiale
+  addWorksToHTML(setAll, gallery)
+  // Filtre => Tous les travaux
+  filterAll.addEventListener("click", function() {
+    addWorksToHTML(setAll, gallery);
+  });
+  // Filtre => Objets
+  filterItems.addEventListener("click", function() {
+    addWorksToHTML(setObjets, gallery);
+  });
+  // Filtre => Appartements
+  filterAppartements.addEventListener("click", function() {
+    addWorksToHTML(setAppartements, gallery);
+  });
+  // Filtre => Hôtel et Restaurants
+  filterHandR.addEventListener("click", function() {
+    addWorksToHTML(setHandR, gallery);
+  });
+}
+
 
 //--------------------- Créaction de la gallerie et des filtres---------------------
 function createGallery(){
@@ -67,63 +121,14 @@ function createGallery(){
         //Transforme les données de l'API en JSON
         works = JSON.parse(works);
 
-        
         //Condition vérifiant l'existant de la zone .gallery
         //Si elle existe alors la fonction se joue
-      if(gallery){
-        // Création des sets
-        let setObjets = new Set();
-        let setAppartements = new Set();
-        let setHandR = new Set();
-        let setAll = new Set();
-        setAll = works;
-
-  
-        for (let i = 0; i < works.length; i++) {
-          let category = works[i].category.name;
-
-          // Ajout des works au sets
-          switch (category) {
-            case "Objets":
-              setObjets.add(works[i]);
-            break;
-
-            case "Appartements":
-              setAppartements.add(works[i]);
-            break;
-
-            case "Hotels & restaurants":
-              setHandR.add(works[i]);
-            break;
-          }
-        }
-        //---------------------Filtres---------------------
-        //Appel de la fonction pour créer la gallerie initiale
-        addWorksToHTML(setAll, gallery)
-
-        // Filtre => Tous les travaux
-        filterAll.addEventListener("click", function() {
-          addWorksToHTML(setAll, gallery);
-        });
-
-        // Filtre => Objets
-        filterItems.addEventListener("click", function() {
-          addWorksToHTML(setObjets, gallery);
-        });
-        
-        // Filtre => Appartements
-        filterAppartements.addEventListener("click", function() {
-          addWorksToHTML(setAppartements, gallery);
-        });
-
-        // Filtre => Hôtel et Restaurants
-        filterHandR.addEventListener("click", function() {
-          addWorksToHTML(setHandR, gallery);
-        });
-    }
-  }
-})
-  .catch((error) => console.error(error));
+          placeWorksOnFilter(works)
+          setAll = works;
+          filtersListeners()
+      }
+    })
+    .catch((error) => console.error(error));
 }
 
 
@@ -356,7 +361,6 @@ function creationModale(){
       labelTitle.id = "labelTitle"
 
       // Création de l'élément input
-      let inputTitle = document.createElement("input");
       inputTitle.type = "text";
       inputTitle.id = "titre"; // identifiant pour lier l'input et le labelTitle
 
@@ -370,7 +374,6 @@ function creationModale(){
       labelCategory.id = "labelCategory";
 
       // Création de l'élément select
-      let select = document.createElement("select");
       select.id = "categories"; // identifiant pour l'élément select
 
       // Option vide
@@ -458,25 +461,24 @@ function creationModale(){
       inputPhoto.type = 'file';
       
       inputPhoto.onchange = function(e) {
-          let file = e.target.files[0];
-          let reader = new FileReader(); // Créer un objet FileReader
+        selectedFile = e.target.files[0];
+        let reader = new FileReader(); // Créer un objet FileReader
           
           reader.onload = function(event) {
               // Créer un élément image
-              let img = document.createElement('img');
-              img.src = event.target.result; // Récupérer l'URL de données de l'image
-              img.alt = 'Image uploadée';
-              img.classList.add('thumbnail');
-              img.id = "imgToUpload"
-              console.log(img)
+              imgInput.src = event.target.result; // Récupérer l'URL de données de l'image
+              imgInput.alt = 'Image uploadée';
+              imgInput.classList.add('thumbnail');
+              imgInput.id = "imgToUpload"
+
               // Afficher l'image dans la div dropArea
               dropArea.innerHTML = ''; // Supprimer le contenu existant de la div
-              dropArea.appendChild(img); // Ajouter l'image à la div
+              dropArea.appendChild(imgInput); // Ajouter l'image à la div
 
               // Vérifier la validité du formulaire après l'upload
               checkFormValidity();
           };
-          reader.readAsDataURL(file); // Lire le contenu du fichier en tant qu'URL de données
+          reader.readAsDataURL(selectedFile); // Lire le contenu du fichier en tant qu'URL de données
       }
       inputPhoto.click();
   });
@@ -493,77 +495,120 @@ function creationModale(){
 }
 
  //----------------------------Envoi des fichiers sur l'API---------------------
-function clickToSubmitWorks(){
-  btnValider.addEventListener("click", (event)=>{
+ function clickToSubmitWorks() {
+  btnValider.addEventListener("click", (event) => {
     event.preventDefault();
 
-    //Token json parse
-    const obj = JSON.parse(localStorage.getItem("token"));
+    if (!selectedFile) {
+      console.error("Image input not found or no file selected");
+      alert("Veuillez sélectionner une image.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", selectedFile); // Utilise `selectedFile` pour les fichiers
+    formData.append("title", inputTitle.value);
+    formData.append("category", select.value);
+
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+
+    const tokenString = localStorage.getItem("token");
+    if (!tokenString) {
+      console.error("Token not found in localStorage");
+      alert("Token non trouvé. Veuillez vous reconnecter.");
+      return;
+    }
+
+    const obj = JSON.parse(tokenString);
+
+    if (!obj.token) {
+      console.error("Token is invalid");
+      alert("Token invalide. Veuillez vous reconnecter.");
+      return;
+    }
 
     const myHeaders = new Headers();
-    myHeaders.append("Authorization",`Bearer ${obj.token}` );
-
-    //Change le résultat de la catégorie en nombre
-    let resulteCategories = Number(document.getElementById("categories").value)
+    myHeaders.append("Authorization", `Bearer ${obj.token}`);
     
-    // Vérifiez si l'image est déjà en base64
-    const imageBase64 = document.getElementById("imgToUpload").src.startsWith("data:image") ? document.getElementById("imgToUpload").src : ""; 
-
-    //Donnés à envoyer dans la requête
-    const raw = JSON.stringify({
-      image: imageBase64,
-      title: document.getElementById("titre").value ,
-      category: resulteCategories  
-      });
-      
-      console.log(raw)
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
-      body : JSON.stringify(raw),
+      body: formData,
       redirect: "follow"
     };
 
     fetch("http://localhost:5678/api/works/", requestOptions)
-      .then((response) => response.text())
-      .then((result) => console.log(result))
-      .catch((error) => console.error(error));
+      .then((response) => {
+        if (!response.ok) {
+          let errorMsg = `Erreur ${response.status}: ${response.statusText}`;
+          switch (response.status) {
+            case 400:
+              errorMsg = "Requête incorrecte. Vérifiez les données envoyées.";
+              break;
+            case 401:
+              errorMsg = "Non autorisé. Vérifiez votre token d'authentification.";
+              break;
+            case 404:
+              errorMsg = "Ressource non trouvée.";
+              break;
+            case 500:
+              errorMsg = "Erreur serveur. Réessayez plus tard.";
+              break;
+            default:
+              errorMsg = `Erreur inattendue: ${response.statusText}`;
+          }
+          throw new Error(errorMsg);
+        }
+        return response.json();
       })
+      .then((result) => {
+        console.log(result);
+        alert("Les données ont été envoyées avec succès !");
+      })
+      .catch((error) => {
+        console.error('There was a problem with your fetch operation:', error);
+        alert(`Erreur lors de l'envoi des données : ${error.message}`);
+      });
+  });
 }
 
-  //---------------------Crée le contenu dans la modale---------------------
-  // Récupération des données depuis le serveur
-  function fetchAndDisplayModaleGallery(){
-    fetch("http://localhost:5678/api/works")
+
+
+//---------------------Crée le contenu dans la modale---------------------
+// Récupération des données depuis le serveur
+function fetchAndDisplayModaleGallery() {
+  fetch("http://localhost:5678/api/works")
     .then(response => response.json())
     .then(works => {
-      let modaleGallery = document.getElementById("modaleGallery")
+      let modaleGallery = document.getElementById("modaleGallery");
       // Utilisation des données pour créer le contenu de la modale
-      works.forEach(function(works, i)  {
-        //Crée la base de la carte + ajout à "gallery"
+      works.forEach(function(work) {
+        // Crée la base de la carte + ajout à "gallery"
         let figure = document.createElement("figure");
-        figure.className = "modale-works"; 
-        figure.id = `figure_${works.id}`
+        figure.className = "modale-works";
+        figure.id = `figure_${work.id}`;
         // Création et ajout de l'image
         let worksImg = document.createElement("img");
-        worksImg.src = works.imageUrl;
-        worksImg.alt = works.title; 
-        
-        //Crée le bouton poubelle
-        let trash = document.createElement("button")
-        trash.className = `trashCan`
-        trash.innerHTML = `<i class="fa-solid fa-trash-can"></i>`
-        trash.dataset.numeroFigure = works.id
+        worksImg.src = work.imageUrl;
+        worksImg.alt = work.title;
 
-        figure.appendChild(trash)
+        // Crée le bouton poubelle
+        let trash = document.createElement("button");
+        trash.className = `trashCan`;
+        trash.innerHTML = `<i class="fa-solid fa-trash-can"></i>`;
+        trash.dataset.numeroFigure = work.id;
+
+        figure.appendChild(trash);
         modaleGallery.appendChild(figure);
         figure.appendChild(worksImg);
       });
-      //Retire les travaux
+      // Retire les travaux
       removeWorks();
     })
     .catch(error => console.error(error));
-  }
+}
 
 //----------------------------Fonctions au lancement de la page---------------------
 //Création de la gallerie de travaux
