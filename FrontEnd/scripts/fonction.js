@@ -16,8 +16,6 @@ let labelCategory = document.createElement("label");
 let emptyOption = document.createElement("option");
 const arrowLeft = document.createElement("i");
 
-
-
 //Titre modale
 let modalTitle = document.getElementById("modaleTitle");
 
@@ -42,35 +40,34 @@ const emailAdmin = document.getElementById("emailAdmin");
 const password = document.getElementById("password");
 
 //Input envoi API
-let imgInput = document.createElement('img'); //Affiche l'image uploadé en thumbnail
+let imgInput = document.createElement("img"); //Affiche l'image uploadé en thumbnail
 let selectedFile; //Pour envoyer l'image à l'upload
 let inputTitle = document.createElement("input"); //Input du titre à l'upload
 let select = document.createElement("select"); // Input catégorie à l'upload
 
 //---------------------Fonction qui crée les éléments HTML suivant les besoin du filtrage---------------------
 function addWorksToHTML(set, gallery) {
-  gallery.innerHTML =""
-  set.forEach(works => {
+  gallery.innerHTML = "";
+  set.forEach((works) => {
     //Crée la base de la carte + ajout à "gallery"
     let figure = document.createElement("figure");
     figure.className = "actual-works";
     gallery.appendChild(figure);
-  
+
     // Création et ajout de l'image
     let worksImg = document.createElement("img");
     worksImg.src = works.imageUrl;
-    worksImg.alt = works.title; 
+    worksImg.alt = works.title;
     figure.appendChild(worksImg);
-  
+
     // Crée le titre de la carte
     let figcaption = document.createElement("figcaption");
-    figcaption.innerText = works.title; 
+    figcaption.innerText = works.title;
     figure.appendChild(figcaption);
   });
 }
 
-
-function placeWorksOnFilter(data){
+function placeWorksOnFilter(data) {
   for (let i = 0; i < data.length; i++) {
     let category = data[i].category.name;
 
@@ -78,119 +75,115 @@ function placeWorksOnFilter(data){
     switch (category) {
       case "Objets":
         setObjets.add(data[i]);
-      break;
+        break;
 
       case "Appartements":
         setAppartements.add(data[i]);
-      break;
+        break;
 
       case "Hotels & restaurants":
         setHandR.add(data[i]);
-      break;
+        break;
     }
   }
 }
 
-
 //---------------------Filtres---------------------
-function filtersListeners(){
+function filtersListeners() {
   //Appel de la fonction pour créer la galerie initiale
-  addWorksToHTML(setAll, gallery)
+  addWorksToHTML(setAll, gallery);
   // Filtre => Tous les travaux
-  filterAll.addEventListener("click", function() {
+  filterAll.addEventListener("click", function () {
     addWorksToHTML(setAll, gallery);
   });
   // Filtre => Objets
-  filterItems.addEventListener("click", function() {
+  filterItems.addEventListener("click", function () {
     addWorksToHTML(setObjets, gallery);
   });
   // Filtre => Appartements
-  filterAppartements.addEventListener("click", function() {
+  filterAppartements.addEventListener("click", function () {
     addWorksToHTML(setAppartements, gallery);
   });
   // Filtre => Hôtel et Restaurants
-  filterHandR.addEventListener("click", function() {
+  filterHandR.addEventListener("click", function () {
     addWorksToHTML(setHandR, gallery);
   });
 }
 
-
 //--------------------- Créaction de la gallerie et des filtres---------------------
-function createGallery(){
+function createGallery() {
   const requestOptions = {
     method: "GET",
-    redirect: "follow"
+    redirect: "follow",
   };
 
   fetch("http://localhost:5678/api/works", requestOptions)
     .then((response) => response.text())
     .then((works) => {
-      if(gallery){
+      if (gallery) {
         //Transforme les données de l'API en JSON
         works = JSON.parse(works);
 
         //Condition vérifiant l'existant de la zone .gallery
         //Si elle existe alors la fonction se joue
-          placeWorksOnFilter(works)
-          setAll = works;
-          filtersListeners()
+        placeWorksOnFilter(works);
+        setAll = works;
+        filtersListeners();
       }
     })
     .catch((error) => console.error(error));
 }
 
-
 //---------------------Fonction qui récupère le token dans le localStorage quand log---------------------
 function getToken() {
   //Conditions qui permettent d'activer la fonction
   //uniquement sur la page concernées
-  if(emailAdmin){
-    document.getElementById("login").style.fontWeight = "700"
-    //Récupération des infos entrées pour log 
-    const logForm = document.querySelector(".logForm ")
+  if (emailAdmin) {
+    document.getElementById("login").style.fontWeight = "700";
+    //Récupération des infos entrées pour log
+    const logForm = document.querySelector(".logForm ");
 
     //Event Listener de l'envoi du formulaire Log Admin
-    logForm.addEventListener("submit", (event)=>{
+    logForm.addEventListener("submit", (event) => {
       event.preventDefault();
       let inputEmailAdmin = emailAdmin.value;
       let inputPasswordAdmin = password.value;
 
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
-      
+
       const raw = JSON.stringify({
         email: inputEmailAdmin,
-        password: inputPasswordAdmin
-        });
+        password: inputPasswordAdmin,
+      });
 
-        const requestOptions = {
-          method: "POST",
-          headers: myHeaders,
-          body: raw,
-          redirect: "follow"
-        };
-        
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
+
       // Envoyer la requête pour obtenir le token d'identification
       fetch("http://localhost:5678/api/users/login", requestOptions)
-        .then(response => {
-
+        .then((response) => {
           //Si info log-in correspondent :
           if (response.ok) {
             return response.text();
           } else {
             //Sinon, message d'erreur
-            erreurLog.style.display = "flex"
+            erreurLog.style.display = "flex";
             throw new Error("Identifiants incorrects");
           }
         })
-        .then(token => {
+        .then((token) => {
           // Stock le token dans le localStorage
           localStorage.setItem("token", token);
 
           // Retour à la page index.html
           window.location.href = "index.html";
         })
-        .catch(error => console.error(error));
+        .catch((error) => console.error(error));
     });
   }
 }
@@ -198,15 +191,15 @@ function getToken() {
 //--------------------- Fonction pour vérifier si le token est présent dans le local storage
 function checkToken() {
   // Récupérer le token depuis le local storage
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   // Vérifier si le token est acquis
   if (token) {
     //S'il est acquis, change l'affichage de ces éléments :
-    document.querySelector(".modeEdition").style.display = "flex"
-    document.getElementById("mod").style.display = "flex"
-    document.querySelector(".divBtnFilter").style.display = "none"
-    document.querySelector(".modale").style.display = "flex"
+    document.querySelector(".modeEdition").style.display = "flex";
+    document.getElementById("mod").style.display = "flex";
+    document.querySelector(".divBtnFilter").style.display = "none";
+    document.querySelector(".modale").style.display = "flex";
   }
 }
 
@@ -217,82 +210,86 @@ function removeWorks() {
 
   // Boucler sur chaque élément et ajouter un eventListener
   for (let i = 0; i < trashCans.length; i++) {
-      trashCans[i].addEventListener("click", function() {
-        let id = trashCans[i].dataset.numeroFigure
-        let figureTargeted = document.getElementById(`figure_${id}`)
+    trashCans[i].addEventListener("click", function () {
+      let id = trashCans[i].dataset.numeroFigure;
+      let figureTargeted = document.getElementById(`figure_${id}`);
 
-        //Token json parse
-        const obj = JSON.parse(localStorage.getItem("token"));
+      //Token json parse
+      const obj = JSON.parse(localStorage.getItem("token"));
 
       const myHeaders = new Headers();
-      myHeaders.append("Authorization",`Bearer ${obj.token}` );
+      myHeaders.append("Authorization", `Bearer ${obj.token}`);
 
       const requestOptions = {
         method: "DELETE",
         headers: myHeaders,
-        redirect: "follow"
+        redirect: "follow",
       };
-      
+
       fetch(`http://localhost:5678/api/works/${id}`, requestOptions)
-      .then((response) => response.text())
-      .then((result) => {
-        console.log(result);
-        modaleGallery.innerHTML = "";
-        fetchAndDisplayModaleGallery();
-        createGallery();
-      })
-      .catch((error) => console.error('Error:', error));
+        .then((response) => response.text())
+        .then((result) => {
+          console.log(result);
+          modaleGallery.innerHTML = "";
+          fetchAndDisplayModaleGallery();
+          createGallery();
+        })
+        .catch((error) => console.error("Error:", error));
     });
   }
 }
 
 //Quand le bouton "logout" est cliqué alors retire le statut d'administrateur
-function clickLogOut(){
-  if (localStorage.getItem('token')) {
-    document.getElementById("login").style.display = "none"
-    document.getElementById("logout").style.display = "flex"
+function clickLogOut() {
+  if (localStorage.getItem("token")) {
+    document.getElementById("login").style.display = "none";
+    document.getElementById("logout").style.display = "flex";
   }
-  let btnLogout = document.getElementById("logout")
-  btnLogout.addEventListener("click", () =>{
-    localStorage.removeItem('token');
+  let btnLogout = document.getElementById("logout");
+  btnLogout.addEventListener("click", () => {
+    localStorage.removeItem("token");
     location.reload();
-  })
+  });
 }
 
 //Fonction de fermeture de la modale
-function modaleClosing(){
-  if(gallery){
-      if(bgModale.style.display === "flex"){
-        bgModale.style.display = "none"
-      }
+function modaleClosing() {
+  if (gallery) {
+    if (bgModale.style.display === "flex") {
+      bgModale.style.display = "none";
+    }
   }
 }
 
 // Fermeture modale quand clic en dehors
-document.addEventListener("click", function(event) {
+document.addEventListener("click", function (event) {
   // Vérifier si le clic n'est pas à l'intérieur de la fenêtre modale mais dans la div bgModale
-  if(gallery){
-    if (!modale.contains(event.target) && bgModale.contains(event.target) && event.target !== modaleGallery) {
-        modaleClosing();
+  if (gallery) {
+    if (
+      !modale.contains(event.target) &&
+      bgModale.contains(event.target) &&
+      event.target !== modaleGallery
+    ) {
+      modaleClosing();
     }
   }
 });
 
 //Apparition de la modale en cliquant sur "modifier"
-function openPopUp(){
-    if(gallery){
-      mod.addEventListener("click", ()=>{
-        modale.innerHTML = ""
-        bgModale.style.display = "flex"
-        creationModale()  
-     })
+function openPopUp() {
+  if (gallery) {
+    mod.addEventListener("click", () => {
+      modale.innerHTML = "";
+      bgModale.style.display = "flex";
+      creationModale();
+    });
   }
 }
 
 //---------------------Modale---------------------
 
 // Création du titre et du bouton de fermeture
-function modaleTitleFunct(){
+function modaleTitleFunct() {
   let modaleTitle = document.createElement("p");
   modaleTitle.id = "modaleTitle";
   modaleTitle.textContent = "Galerie photo";
@@ -300,15 +297,15 @@ function modaleTitleFunct(){
 }
 
 // Création de la galerie
-function modaleGalleryCreation(){
+function modaleGalleryCreation() {
   modaleGallery = document.createElement("div");
   modaleGallery.id = "modaleGallery";
   modale.appendChild(modaleGallery);
-  fetchAndDisplayModaleGallery()
+  fetchAndDisplayModaleGallery();
 }
 
 // Ajout du bouton "Ajouter une photo"
-function createAddPhotoButton(){
+function createAddPhotoButton() {
   addPhotoButton = document.createElement("input");
   addPhotoButton.type = "submit";
   addPhotoButton.id = "addPhoto";
@@ -317,32 +314,29 @@ function createAddPhotoButton(){
 }
 
 //Retire tout le contenu de modaleGallery
-function resetGallery(){
-    modaleGallery.innerHTML = "";
-    modaleGallery.style.margin = "auto";
-    addPhotoButton.style.display = "none"
-    //Change le texte du titre
-    modaleTitle.innerText = "Ajout photo";
+function resetGallery() {
+  modaleGallery.innerHTML = "";
+  modaleGallery.style.margin = "auto";
+  addPhotoButton.style.display = "none";
+  //Change le texte du titre
+  modaleTitle.innerText = "Ajout photo";
 }
 
 //Crée la flèche de retour en arrière
-function arrowLeftBack(){
-
-  arrowLeft.className = 'fa-solid fa-arrow-left arrowLeft';
+function arrowLeftBack() {
+  arrowLeft.className = "fa-solid fa-arrow-left arrowLeft";
   modale.appendChild(arrowLeft);
-  modale.appendChild(modaleGallery)
+  modale.appendChild(modaleGallery);
 
   //EventListener flêche retour arrière
-  arrowLeft.addEventListener("click", ()=>{
-  modale.innerHTML ="";
-  creationModale()
-  }) 
+  arrowLeft.addEventListener("click", () => {
+    modale.innerHTML = "";
+    creationModale();
+  });
 }
 
-
-let isCategoryFetched = false; // Permet à fetchCategory() de ne pas se lancer si "true", évite duplication des options
-
 function fetchCategory() {
+  let isCategoryFetched = false; // Permet à fetchCategory() de ne pas se lancer si "true", évite duplication des options
   if (isCategoryFetched) {
     return;
   }
@@ -359,7 +353,7 @@ function fetchCategory() {
   const requestOptions = {
     method: "GET",
     headers: myHeaders,
-    redirect: "follow"
+    redirect: "follow",
   };
 
   fetch("http://localhost:5678/api/categories", requestOptions)
@@ -367,7 +361,7 @@ function fetchCategory() {
     .then((options) => {
       options = JSON.parse(options);
       // Options de catégorie
-      options.forEach(option => {
+      options.forEach((option) => {
         let optionHTML = document.createElement("option");
         optionHTML.textContent = option.name;
         optionHTML.value = option.id;
@@ -377,166 +371,156 @@ function fetchCategory() {
     .catch((error) => console.error(error));
 }
 
-/*let isCreateInputsUploadFiles = false;
-if (isCreateInputsUploadFiles) {
-  return;
-}*/
-
-function createInputsUploadFiles(){
-
+function createInputsUploadFiles() {
   isCreateInputsUploadFiles = true;
-        // Zone upload photo
-        const dropArea = document.createElement('div');
-        dropArea.id = 'dropArea';
-        dropArea.classList.add('drop-area');
-  
-        
-        //Crée bouton "+ Ajouter Photo"
-        btnInputPhoto = document.createElement("button");
-        btnInputPhoto.innerText = "+ Ajouter Photo";
-        btnInputPhoto.id = "btnInputPhoto"
-  
-        //Ajoute le logo d'image lorsque pas d'upload
-        const noImageIcon = document.createElement('i');
-        noImageIcon.id = 'no-image-icon';
-        noImageIcon.classList.add('fa-regular', 'fa-image');
-  
-        //Ajoute le texte lorsque pas d'upload
-        const noImageText = document.createElement('p');
-        noImageText.id = 'noImageText';
-        noImageText.textContent = 'jpg, png : 4mo max';
-  
-        // Création de l'élément label Titre
-        labelTitle.for = ("titre")
-        labelTitle.textContent = "Titre";
-        labelTitle.id = "labelTitle"
-  
-        // Création de l'élément input
-        inputTitle.type = "text";
-        inputTitle.id = "titre"; // identifiant pour lier l'input et le labelTitle
-  
-        // Ajout de l'input à l'intérieur du labelTitle
-        labelTitle.appendChild(inputTitle);
-  
-        
-        // Crée l'input et catégorie + label
-   
-        labelCategory.textContent = "Catégorie";
-        labelCategory.id = "labelCategory";
-  
-        // Création de l'élément select
-        select.id = "categories"; // identifiant pour l'élément select
-  
-        // Option vide
-     
-        emptyOption.value = ""; // Valeur vide
-        emptyOption.textContent = ""; // Texte vide
-        select.appendChild(emptyOption);
-  
-  
-  
-  
-        //Crée bouton Valider
-        let btnValider = document.createElement("button");
-        btnValider.type = "submit"
-        btnValider.id = "btnValider"
-        btnValider.innerText = "Valider"
-        btnValider.style.background = "#a8a4a4"
-        btnValider.disabled = true
-  
-        // Ajout des éléments à la dropArea
-        dropArea.appendChild(noImageIcon);
-        dropArea.appendChild(btnInputPhoto)
-        dropArea.appendChild(noImageText);
-  
-        // Ajout de la dropArea à l'intérieur de la div avec l'ID "modaleGallery"
-        modaleGallery = document.getElementById('modaleGallery');
-        modaleGallery.style.display = "flex";
-        modaleGallery.style.flexDirection = "column";
-        modaleGallery.style.gap = "5px";
-  
-        //Rajoute les elements de la 2eme page modale à la gallerie
-        modaleGallery.appendChild(dropArea);
-        modaleGallery.appendChild(labelTitle)
-        modaleGallery.appendChild(inputTitle)
-        modaleGallery.appendChild(labelCategory)
-        modaleGallery.appendChild(select)
-     
-      
-        modale.appendChild(btnValider);
+  // Zone upload photo
+  const dropArea = document.createElement("div");
+  dropArea.id = "dropArea";
+  dropArea.classList.add("drop-area");
+
+  //Crée bouton "+ Ajouter Photo"
+  btnInputPhoto = document.createElement("button");
+  btnInputPhoto.innerText = "+ Ajouter Photo";
+  btnInputPhoto.id = "btnInputPhoto";
+
+  //Ajoute le logo d'image lorsque pas d'upload
+  const noImageIcon = document.createElement("i");
+  noImageIcon.id = "no-image-icon";
+  noImageIcon.classList.add("fa-regular", "fa-image");
+
+  //Ajoute le texte lorsque pas d'upload
+  const noImageText = document.createElement("p");
+  noImageText.id = "noImageText";
+  noImageText.textContent = "jpg, png : 4mo max";
+
+  // Création de l'élément label Titre
+  labelTitle.for = "titre";
+  labelTitle.textContent = "Titre";
+  labelTitle.id = "labelTitle";
+
+  // Création de l'élément input
+  inputTitle.type = "text";
+  inputTitle.id = "titre"; // identifiant pour lier l'input et le labelTitle
+
+  // Ajout de l'input à l'intérieur du labelTitle
+  labelTitle.appendChild(inputTitle);
+
+  // Crée l'input et catégorie + label
+
+  labelCategory.textContent = "Catégorie";
+  labelCategory.id = "labelCategory";
+
+  // Création de l'élément select
+  select.id = "categories"; // identifiant pour l'élément select
+
+  // Option vide
+
+  emptyOption.value = ""; // Valeur vide
+  emptyOption.textContent = ""; // Texte vide
+  select.appendChild(emptyOption);
+
+  //Crée bouton Valider
+  let btnValider = document.createElement("button");
+  btnValider.type = "submit";
+  btnValider.id = "btnValider";
+  btnValider.innerText = "Valider";
+  btnValider.style.background = "#a8a4a4";
+  btnValider.disabled = true;
+
+  // Ajout des éléments à la dropArea
+  dropArea.appendChild(noImageIcon);
+  dropArea.appendChild(btnInputPhoto);
+  dropArea.appendChild(noImageText);
+
+  // Ajout de la dropArea à l'intérieur de la div avec l'ID "modaleGallery"
+  modaleGallery = document.getElementById("modaleGallery");
+  modaleGallery.style.display = "flex";
+  modaleGallery.style.flexDirection = "column";
+  modaleGallery.style.gap = "5px";
+
+  //Rajoute les elements de la 2eme page modale à la gallerie
+  modaleGallery.appendChild(dropArea);
+  modaleGallery.appendChild(labelTitle);
+  modaleGallery.appendChild(inputTitle);
+  modaleGallery.appendChild(labelCategory);
+  modaleGallery.appendChild(select);
+
+  modale.appendChild(btnValider);
 }
 
-
 //Crée la modale et l'affichage de son premier panneau
-function creationModale(){
-  modaleTitleFunct()
+function creationModale() {
+  modaleTitleFunct();
   //Création du bouton de fermeture "X"
   let closeModale = document.createElement("button");
   closeModale.id = "closeModale";
   closeModale.innerHTML = '<i class="fa-solid fa-xmark"></i>';
   modale.appendChild(closeModale);
 
-  modaleGalleryCreation()
-  createAddPhotoButton()
+  modaleGalleryCreation();
+  createAddPhotoButton();
 
   // Ajout de l'événement de clic au bouton de fermeture
-  closeModale.addEventListener("click", function() {
+  closeModale.addEventListener("click", function () {
     bgModale.style.display = "none";
   });
 
   //Bouton "Ajouter une photo" + création de tous les éléments de la galerie d'upload
-  addPhotoButton.addEventListener("click", (event)=>{
-    resetGallery()
-    arrowLeftBack()
-    modaleGallery.style.overflow = "hidden"
-    createInputsUploadFiles()
-    fetchCategory()
+  addPhotoButton.addEventListener("click", (event) => {
+    resetGallery();
+    arrowLeftBack();
+    modaleGallery.style.overflow = "hidden";
+    createInputsUploadFiles();
+    fetchCategory();
 
     // Écouteurs d'événements pour vérifier la validité du formulaire
-    inputTitle.addEventListener('input', checkFormValidity);
-    select.addEventListener('change', checkFormValidity);
+    inputTitle.addEventListener("input", checkFormValidity);
+    select.addEventListener("change", checkFormValidity);
 
-    btnInputPhoto.addEventListener('click', function() {
-      let inputPhoto = document.createElement('input');
-      inputPhoto.type = 'file';
-      
-      inputPhoto.onchange = function(e) {
+    btnInputPhoto.addEventListener("click", function () {
+      let inputPhoto = document.createElement("input");
+      inputPhoto.type = "file";
+
+      inputPhoto.onchange = function (e) {
         selectedFile = e.target.files[0];
         let reader = new FileReader(); // Créer un objet FileReader
-        reader.onload = function(event) {
+        reader.onload = function (event) {
           // Créer un élément image
           imgInput.src = event.target.result; // Récupérer l'URL de données de l'image
-          imgInput.alt = 'Image uploadée';
-          imgInput.classList.add('thumbnail');
-          imgInput.id = "imgToUpload"
+          imgInput.alt = "Image uploadée";
+          imgInput.classList.add("thumbnail");
+          imgInput.id = "imgToUpload";
           // Afficher l'image dans la div dropArea
-          dropArea.innerHTML = ''; // Supprimer le contenu existant de la div
+          dropArea.innerHTML = ""; // Supprimer le contenu existant de la div
           dropArea.appendChild(imgInput); // Ajouter l'image à la div
           // Vérifier la validité du formulaire après l'upload
           checkFormValidity();
         };
-          reader.readAsDataURL(selectedFile); // Lire le contenu du fichier en tant qu'URL de données
-      }
+        reader.readAsDataURL(selectedFile); // Lire le contenu du fichier en tant qu'URL de données
+      };
       inputPhoto.click();
     });
-  }) 
+  });
 }
 
 // Fonction pour vérifier si tous les champs sont remplis
 function checkFormValidity() {
-  if (inputTitle.value !== "" && select.value !== "" && dropArea.querySelector('img')) {
-      btnValider.style.background = "#1D6154";
-      btnValider.disabled = false;
-      clickToSubmitWorks()  
+  if (
+    inputTitle.value !== "" &&
+    select.value !== "" &&
+    dropArea.querySelector("img")
+  ) {
+    btnValider.style.background = "#1D6154";
+    btnValider.disabled = false;
+    clickToSubmitWorks();
   } else {
-      btnValider.style.background = "#a8a4a4";
-      btnValider.disabled = true;
+    btnValider.style.background = "#a8a4a4";
+    btnValider.disabled = true;
   }
 }
 
-
- //----------------------------Envoi des fichiers sur l'API---------------------
- function clickToSubmitWorks() {
+//----------------------------Envoi des fichiers sur l'API---------------------
+function clickToSubmitWorks() {
   btnValider.addEventListener("click", (event) => {
     event.preventDefault();
 
@@ -572,16 +556,18 @@ function checkFormValidity() {
 
     const myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${obj.token}`);
-    
+
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
       body: formData,
-      redirect: "follow"
+      redirect: "follow",
     };
 
     fetch("http://localhost:5678/api/works/", requestOptions)
       .then((response) => {
+        createGallery();
+        bgModale.style.display = "none";
         if (!response.ok) {
           let errorMsg = `Erreur ${response.status}: ${response.statusText}`;
           switch (response.status) {
@@ -589,7 +575,8 @@ function checkFormValidity() {
               errorMsg = "Requête incorrecte. Vérifiez les données envoyées.";
               break;
             case 401:
-              errorMsg = "Non autorisé. Vérifiez votre token d'authentification.";
+              errorMsg =
+                "Non autorisé. Vérifiez votre token d'authentification.";
               break;
             case 404:
               errorMsg = "Ressource non trouvée.";
@@ -606,25 +593,24 @@ function checkFormValidity() {
       })
       .then((result) => {
         console.log(result);
-        
       })
       .catch((error) => {
-        console.error('There was a problem with your fetch operation:', error);
+        console.error("There was a problem with your fetch operation:", error);
         alert(`Erreur lors de l'envoi des données : ${error.message}`);
       });
   });
 }
 
-
 //---------------------Crée le contenu dans la modale---------------------
 // Récupération des données depuis le serveur
 function fetchAndDisplayModaleGallery() {
   fetch("http://localhost:5678/api/works")
-    .then(response => response.json())
-    .then(works => {
+    .then((response) => response.json())
+    .then((works) => {
       let modaleGallery = document.getElementById("modaleGallery");
+      modaleGallery.innerHTML = "";
       // Utilisation des données pour créer le contenu de la modale
-      works.forEach(function(work) {
+      works.forEach(function (work) {
         // Crée la base de la carte + ajout à "gallery"
         let figure = document.createElement("figure");
         figure.className = "modale-works";
@@ -647,30 +633,27 @@ function fetchAndDisplayModaleGallery() {
       // Retire les travaux
       removeWorks();
     })
-    .catch(error => console.error(error));
+    .catch((error) => console.error(error));
 }
 
 //----------------------------Fonctions au lancement de la page---------------------
 //Création de la gallerie de travaux
-createGallery()
+createGallery();
 
 //Obtient le token d'identification
-getToken()
+getToken();
 
 //Se déconnecter
-clickLogOut()
+clickLogOut();
 
 //Vérifie si le token est présent quand la page se charge
 window.onload = checkToken();
 
 //Ouverture de la modale
-openPopUp()
+openPopUp();
 
 //Fermeture de la modale
-modaleClosing()
-
-
-
+modaleClosing();
 
 //Bouton changement panneau modale
 addPhotoButton = document.getElementById("addPhoto");

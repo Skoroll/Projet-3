@@ -106,8 +106,8 @@ h1 > span {
 	font-family: 'Work Sans';
 	font-size:10px;
 	letter-spacing: 0.1em;
-;
 }
+
 
 h2{
 	font-family: 'Syne';
@@ -359,11 +359,11 @@ form label{
     position: relative;
     flex-direction: column;
     margin: 0;
-    padding: 40px 5px 10px 5px;
+    padding: 40px 15px 15px 15px;
     border-radius: 10px;
     z-index: 1;
-    width: 35%;
-	height: 65%;
+    width: 28%;
+	height: 55%;
 	min-width: 350px;
 
     background-color: #FFFEF8;
