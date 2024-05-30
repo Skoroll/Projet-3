@@ -606,7 +606,7 @@ function checkFormValidity() {
       })
       .then((result) => {
         console.log(result);
-        alert("Les données ont été envoyées avec succès !");
+        
       })
       .catch((error) => {
         console.error('There was a problem with your fetch operation:', error);
