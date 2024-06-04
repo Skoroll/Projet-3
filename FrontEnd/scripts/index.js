@@ -18,6 +18,7 @@ let selectedFile; //Pour envoyer l'image à l'upload
 let inputTitle = document.createElement("input"); //Input du titre à l'upload
 let select = document.createElement("select"); // Input catégorie à l'upload
 
+
 //---------------------Fonction qui crée les éléments HTML suivant les besoin du filtrage---------------------
 function addWorksToHTML(set, gallery) {
   gallery.innerHTML = "";
