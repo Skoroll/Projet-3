@@ -4,86 +4,11 @@ let setAppartements = new Set();
 let setHandR = new Set();
 let setAll = new Set();
 
-let modaleGallery = document.createElement("div");
-
-//Boutons de filtre
-const filterAll = document.getElementById("all");
-const filterItems = document.getElementById("items");
-const filterAppartements = document.getElementById("appartements");
-const filterHandR = document.getElementById("hotelsAndRestaurants");
-
-//Input envoi API
+//Input envoi formulaire modale
 let imgInput = document.createElement("img"); //Affiche l'image uploadé en thumbnail
 let selectedFile; //Pour envoyer l'image à l'upload
 let inputTitle = document.createElement("input"); //Input du titre à l'upload
 let select = document.createElement("select"); // Input catégorie à l'upload
-
-//---------------------Fonction qui crée les éléments HTML suivant les besoin du filtrage---------------------
-function addWorksToHTML(set, gallery) {
-  gallery.innerHTML = "";
-  gallery = document.querySelector(".gallery");
-  set.forEach((works) => {
-    //Crée la base de la carte + ajout à "gallery"
-    let figure = document.createElement("figure");
-    figure.className = "actual-works";
-    gallery.appendChild(figure);
-
-    // Création et ajout de l'image
-    let worksImg = document.createElement("img");
-    worksImg.src = works.imageUrl;
-    worksImg.alt = works.title;
-    figure.appendChild(worksImg);
-
-    // Crée le titre de la carte
-    let figcaption = document.createElement("figcaption");
-    figcaption.innerText = works.title;
-    figure.appendChild(figcaption);
-  });
-}
-
-function placeWorksOnFilter(data) {
-  for (let i = 0; i < data.length; i++) {
-    let category = data[i].category.name;
-
-    // Ajout des works au sets
-    switch (category) {
-      case "Objets":
-        setObjets.add(data[i]);
-        break;
-
-      case "Appartements":
-        setAppartements.add(data[i]);
-        break;
-
-      case "Hotels & restaurants":
-        setHandR.add(data[i]);
-        break;
-    }
-  }
-}
-
-//---------------------Filtres---------------------
-function filtersListeners() {
-  //Appel de la fonction pour créer la galerie initiale
-  gallery = document.querySelector(".gallery");
-  addWorksToHTML(setAll, gallery);
-  // Filtre => Tous les travaux
-  filterAll.addEventListener("click", function () {
-    addWorksToHTML(setAll, gallery);
-  });
-  // Filtre => Objets
-  filterItems.addEventListener("click", function () {
-    addWorksToHTML(setObjets, gallery);
-  });
-  // Filtre => Appartements
-  filterAppartements.addEventListener("click", function () {
-    addWorksToHTML(setAppartements, gallery);
-  });
-  // Filtre => Hôtel et Restaurants
-  filterHandR.addEventListener("click", function () {
-    addWorksToHTML(setHandR, gallery);
-  });
-}
 
 //--------------------- Créaction de la gallerie et des filtres---------------------
 function createGallery() {
@@ -107,6 +32,82 @@ function createGallery() {
     .catch((error) => console.error(error));
 }
 
+//---------------------Fonction qui crée les éléments HTML suivant les besoin du filtrage---------------------
+//Utilise des paramètres modifiable à la demande
+function addWorksToHTML(set, gallery) {
+  gallery.innerHTML = "";
+  gallery = document.querySelector(".gallery");
+  set.forEach((works) => {
+    //Crée la base de la carte + ajout à "gallery"
+    let figure = document.createElement("figure");
+    figure.className = "actual-works";
+    gallery.appendChild(figure);
+
+    // Création et ajout de l'image
+    let worksImg = document.createElement("img");
+    worksImg.src = works.imageUrl;
+    worksImg.alt = works.title;
+    figure.appendChild(worksImg);
+
+    // Crée le titre de la carte
+    let figcaption = document.createElement("figcaption");
+    figcaption.innerText = works.title;
+    figure.appendChild(figcaption);
+  });
+}
+
+//---------------------Places les travaux dans les filtres---------------------
+function placeWorksOnFilter(data) {
+  for (let i = 0; i < data.length; i++) {
+    let category = data[i].category.name;
+
+    // Ajout des works au sets
+    switch (category) {
+      case "Objets":
+        setObjets.add(data[i]);
+        break;
+
+      case "Appartements":
+        setAppartements.add(data[i]);
+        break;
+
+      case "Hotels & restaurants":
+        setHandR.add(data[i]);
+        break;
+    }
+  }
+}
+
+//---------------------Event listeneur des filtres---------------------
+function filtersListeners() {
+  //Boutons de filtre
+const filterAll = document.getElementById("all");
+const filterItems = document.getElementById("items");
+const filterAppartements = document.getElementById("appartements");
+const filterHandR = document.getElementById("hotelsAndRestaurants");
+
+  gallery = document.querySelector(".gallery");
+  addWorksToHTML(setAll, gallery);
+  // Filtre => Tous les travaux
+  filterAll.addEventListener("click", function () {
+    addWorksToHTML(setAll, gallery);
+  });
+  // Filtre => Objets
+  filterItems.addEventListener("click", function () {
+    addWorksToHTML(setObjets, gallery);
+  });
+  // Filtre => Appartements
+  filterAppartements.addEventListener("click", function () {
+    addWorksToHTML(setAppartements, gallery);
+  });
+  // Filtre => Hôtel et Restaurants
+  filterHandR.addEventListener("click", function () {
+    addWorksToHTML(setHandR, gallery);
+  });
+}
+
+
+//---------------------logout---------------------
 //Quand le bouton "logout" est cliqué alors retire le statut d'administrateur
 function clickLogOut() {
   if (localStorage.getItem("token")) {
@@ -120,14 +121,14 @@ function clickLogOut() {
   });
 }
 
-//Fonction de fermeture de la modale
+//---------------------Fonction de fermeture de la modale---------------------
 function modaleClosing() {
   bgModale = document.querySelector(".modaleBackground");
   if (bgModale.style.display === "flex") {
     bgModale.style.display = "none";
   }
 }
-//--------------------- Fonction pour vérifier si le token est présent dans le local storage
+//--------------------- Fonction pour vérifier si le token est présent dans le local storage---------------------
 function checkToken() {
   // Récupérer le token depuis le local storage
   const token = localStorage.getItem("token");
@@ -141,7 +142,7 @@ function checkToken() {
     document.querySelector(".modale").style.display = "flex";
   }
 }
-// Fermeture modale quand clic en dehors
+// ---------------------Fermeture modale quand clic en dehors---------------------
 document.addEventListener("click", function (event) {
   // Vérifier si le clic n'est pas à l'intérieur de la fenêtre modale mais dans la div bgModale
   //Galerie où apparaissent les travaux
@@ -155,7 +156,7 @@ document.addEventListener("click", function (event) {
   }
 });
 
-//Apparition de la modale en cliquant sur "modifier"
+//---------------------Apparition de la modale en cliquant sur "modifier"---------------------
 function openPopUp() {
   mod.addEventListener("click", () => {
     //Galerie où apparaissent les travaux
@@ -264,10 +265,6 @@ function fetchCategory() {
     .catch((error) => console.error(error));
 }
 
-/*let isCreateInputsUploadFiles = false;
-if (isCreateInputsUploadFiles) {
-  return;
-}*/
 
 function createInputsUploadFiles() {
   //Galerie où apparaissent les travaux
