@@ -6,7 +6,7 @@ let setAll = new Set();
 
 let modaleGallery = document.createElement("div");
 
-//Boutons de filtre
+//Boutons de filtre 
 const filterAll = document.getElementById("all");
 const filterItems = document.getElementById("items");
 const filterAppartements = document.getElementById("appartements");
